@@ -5,7 +5,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from .managers import CurrentTimePeriodManager, CurrentAndPastTimePeriodManager
+from ..managers import CurrentTimePeriodManager, CurrentAndPastTimePeriodManager
+
+__all__ = ('TimePeriodBase', 'TimePeriod')
 
 
 class TimePeriodBase(models.Model):
@@ -41,7 +43,8 @@ class TimePeriodBase(models.Model):
                 where=['%s BETWEEN period_start AND period_end'],
                 params=[datetime_]
             )
-            if self.pk: q = q.exclude(pk=self.pk)
+            if self.pk:
+                q = q.exclude(pk=self.pk)
 
             if q.exists():
                 raise ValidationError(
@@ -55,7 +58,8 @@ class TimePeriodBase(models.Model):
             params=[self.period_start, self.period_end,
                     self.period_start, self.period_end]
         )
-        if self.pk: q = q.exclude(pk=self.pk)
+        if self.pk:
+            q = q.exclude(pk=self.pk)
 
         if(q.exists()):
             raise ValidationError(_('This period encompass another period.'))
